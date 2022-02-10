@@ -1,0 +1,24 @@
+set(LIBRARY_TARGET_NAME expected_task)
+
+set(LIB_ROOT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/")
+
+file(GLOB_RECURSE ${LIBRARY_TARGET_NAME}_HDR "./expected_task/*.hpp")
+
+add_library(${LIBRARY_TARGET_NAME} INTERFACE)
+
+add_library(${PROJECT_NAME}::${LIBRARY_TARGET_NAME} ALIAS ${LIBRARY_TARGET_NAME})
+
+target_include_directories(
+  ${LIBRARY_TARGET_NAME} INTERFACE "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+                                   "$<INSTALL_INTERFACE:$<INSTALL_PREFIX>/${CMAKE_INSTALL_INCLUDEDIR}>")
+
+install(TARGETS ${LIBRARY_TARGET_NAME} EXPORT ${PROJECT_NAME})
+
+install(FILES ${${LIBRARY_TARGET_NAME}_HDR} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${LIBRARY_TARGET_NAME}")
+
+target_link_libraries(${LIBRARY_TARGET_NAME} INTERFACE tl::expected)
+if(IMPORT_CPPRESTSDK)
+    target_link_libraries(${LIBRARY_TARGET_NAME} INTERFACE cpprestsdk::cpprestsdk)
+endif()
+
+message(STATUS "Created target ${LIBRARY_TARGET_NAME} for export ${PROJECT_NAME}.")
