@@ -1,5 +1,7 @@
 #pragma once
 
+#include <concepts>
+
 #include <boost/optional.hpp>
 
 template <class T, class F>
