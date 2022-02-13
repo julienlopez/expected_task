@@ -5,7 +5,7 @@
 namespace Testing
 {
 
-auto makeTimesTwoLambda(std::size_t& has_been_called)
+inline auto makeTimesTwoLambda(std::size_t& has_been_called)
 {
     return [&has_been_called](double value) -> pplx::task<double>
     {
@@ -14,7 +14,7 @@ auto makeTimesTwoLambda(std::size_t& has_been_called)
     };
 }
 
-auto makeFailableTimesTwoLambda(std::size_t& has_been_called)
+inline auto makeFailableTimesTwoLambda(std::size_t& has_been_called)
 {
     return [&has_been_called](double value) -> tl::expected<double, std::wstring>
     {
@@ -23,7 +23,7 @@ auto makeFailableTimesTwoLambda(std::size_t& has_been_called)
     };
 }
 
-auto makeFailableTimesTwoLambdaT(std::size_t& has_been_called)
+inline auto makeFailableTimesTwoLambdaT(std::size_t& has_been_called)
 {
     return [&has_been_called](double value)
     {
@@ -32,7 +32,7 @@ auto makeFailableTimesTwoLambdaT(std::size_t& has_been_called)
     };
 }
 
-auto makeFailableTimesTwoLambdaET(std::size_t& has_been_called)
+inline auto makeFailableTimesTwoLambdaET(std::size_t& has_been_called)
 {
     return [&has_been_called](double value)
     {
@@ -41,7 +41,7 @@ auto makeFailableTimesTwoLambdaET(std::size_t& has_been_called)
     };
 }
 
-template <class T, class Err> auto makeFailLambda(std::size_t& has_been_called, Err error)
+template <class T, class Err> inline auto makeFailLambda(std::size_t& has_been_called, Err error)
 {
     return [&has_been_called, e = std::move(error)](double) mutable -> tl::expected<T, Err>
     {
@@ -50,7 +50,7 @@ template <class T, class Err> auto makeFailLambda(std::size_t& has_been_called, 
     };
 }
 
-template <class T, class Err> auto makeFailLambdaT(std::size_t& has_been_called, Err error)
+template <class T, class Err> inline auto makeFailLambdaT(std::size_t& has_been_called, Err error)
 {
     return [&has_been_called, e = std::move(error)](double) mutable
     {
@@ -59,7 +59,7 @@ template <class T, class Err> auto makeFailLambdaT(std::size_t& has_been_called,
     };
 }
 
-template <class T, class Err> auto makeFailLambdaET(std::size_t& has_been_called, Err error)
+template <class T, class Err> inline auto makeFailLambdaET(std::size_t& has_been_called, Err error)
 {
     return [&has_been_called, e = std::move(error)](double) mutable -> expected_task::expected_task<T, Err>
     {
