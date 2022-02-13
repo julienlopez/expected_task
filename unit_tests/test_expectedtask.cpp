@@ -2,39 +2,12 @@
 
 #include <string>
 
-#include <expected_task/expected_task.hpp>
+#include "utilities.hpp"
 
 using namespace std::string_literals;
 
 namespace
 {
-
-auto makeTimesTwoLambda(std::size_t& has_been_called)
-{
-    return [&has_been_called](const double value) -> double
-    {
-        has_been_called++;
-        return 2 * value;
-    };
-}
-
-auto makeFailableTimesTwoLambda(std::size_t& has_been_called)
-{
-    return [&has_been_called](double value) -> tl::expected<double, std::wstring>
-    {
-        has_been_called++;
-        return 2 * value;
-    };
-}
-
-template <class T, class Err> auto makeFailLambda(std::size_t& has_been_called, Err error)
-{
-    return [&has_been_called, e = std::move(error)](double) mutable -> tl::expected<T, Err>
-    {
-        has_been_called++;
-        return tl::make_unexpected(std::move(e));
-    };
-}
 
 std::string convertStr(const std::wstring& e)
 {
@@ -99,7 +72,7 @@ TEST_CASE("Test expected_task", "[task]")
             const double init_value = 1.2;
             std::size_t has_been_called = 0;
             const auto res = expected_task::expected_task<double, std::wstring>{init_value}
-                                 .then_map(makeTimesTwoLambda(has_been_called))
+                                 .then_map(Testing::makeTimesTwoLambda(has_been_called))
                                  .get();
             REQUIRE(has_been_called == 1);
             REQUIRE(res.has_value());
@@ -111,7 +84,7 @@ TEST_CASE("Test expected_task", "[task]")
         {
             std::size_t has_been_called = 0;
             const auto res = expected_task::expected_task<double, std::wstring>{tl::make_unexpected(L"nope"s)}
-                                 .then_map(makeTimesTwoLambda(has_been_called))
+                                 .then_map(Testing::makeTimesTwoLambda(has_been_called))
                                  .get();
             REQUIRE(has_been_called == 0);
             REQUIRE_FALSE(res.has_value());
@@ -122,9 +95,9 @@ TEST_CASE("Test expected_task", "[task]")
             const double init_value = 1.2;
             std::size_t has_been_called = 0;
             const auto res = expected_task::expected_task<double, std::wstring>{init_value}
-                                 .then_map(makeTimesTwoLambda(has_been_called))
-                                 .then_map(makeTimesTwoLambda(has_been_called))
-                                 .then_map(makeTimesTwoLambda(has_been_called))
+                                 .then_map(Testing::makeTimesTwoLambda(has_been_called))
+                                 .then_map(Testing::makeTimesTwoLambda(has_been_called))
+                                 .then_map(Testing::makeTimesTwoLambda(has_been_called))
                                  .get();
             REQUIRE(has_been_called == 3);
             REQUIRE(res.has_value());
@@ -137,7 +110,7 @@ TEST_CASE("Test expected_task", "[task]")
             const double init_value = 1.2;
             std::size_t has_been_called = 0;
             const auto res = expected_task::expected_task<double, std::wstring>{init_value}
-                                 .then_map(makeTimesTwoLambda(has_been_called))
+                                 .then_map(Testing::makeTimesTwoLambda(has_been_called))
                                  .then_map(static_cast<std::wstring (*)(double)>(&std::to_wstring))
                                  .get();
             REQUIRE(has_been_called == 1);
@@ -151,7 +124,7 @@ TEST_CASE("Test expected_task", "[task]")
             const double init_value = 2;
             std::size_t has_been_called = 0;
             const auto res = expected_task::expected_task<int, std::wstring>{init_value}
-                                 .then_map(makeTimesTwoLambda(has_been_called))
+                                 .then_map(Testing::makeTimesTwoLambda(has_been_called))
                                  .get();
             REQUIRE(has_been_called == 1);
             REQUIRE(res.has_value());
@@ -168,7 +141,7 @@ TEST_CASE("Test expected_task", "[task]")
             const double init_value = 1.2;
             std::size_t has_been_called = 0;
             const auto res = expected_task::expected_task<double, std::wstring>{init_value}
-                                 .and_then(makeFailableTimesTwoLambda(has_been_called))
+                                 .and_then(Testing::makeFailableTimesTwoLambda(has_been_called))
                                  .get();
             REQUIRE(has_been_called == 1);
             REQUIRE(res.has_value());
@@ -180,7 +153,7 @@ TEST_CASE("Test expected_task", "[task]")
         {
             std::size_t has_been_called = 0;
             const auto res = expected_task::expected_task<double, std::wstring>{tl::make_unexpected(L"nope"s)}
-                                 .and_then(makeFailableTimesTwoLambda(has_been_called))
+                                 .and_then(Testing::makeFailableTimesTwoLambda(has_been_called))
                                  .get();
             REQUIRE(has_been_called == 0);
             REQUIRE_FALSE(res.has_value());
@@ -191,9 +164,9 @@ TEST_CASE("Test expected_task", "[task]")
             const double init_value = 1.2;
             std::size_t has_been_called = 0;
             const auto res = expected_task::expected_task<double, std::wstring>{init_value}
-                                 .and_then(makeFailableTimesTwoLambda(has_been_called))
-                                 .and_then(makeFailableTimesTwoLambda(has_been_called))
-                                 .and_then(makeFailableTimesTwoLambda(has_been_called))
+                                 .and_then(Testing::makeFailableTimesTwoLambda(has_been_called))
+                                 .and_then(Testing::makeFailableTimesTwoLambda(has_been_called))
+                                 .and_then(Testing::makeFailableTimesTwoLambda(has_been_called))
                                  .get();
             REQUIRE(has_been_called == 3);
             REQUIRE(res.has_value());
@@ -208,9 +181,9 @@ TEST_CASE("Test expected_task", "[task]")
             std::size_t error_lmbd_has_been_called = 0;
             const std::wstring error = L"error!";
             const auto res = expected_task::expected_task<double, std::wstring>{init_value}
-                                 .and_then(makeFailableTimesTwoLambda(normal_lmbd_has_been_called))
-                                 .and_then(makeFailLambda<double>(error_lmbd_has_been_called, error))
-                                 .and_then(makeFailableTimesTwoLambda(normal_lmbd_has_been_called))
+                                 .and_then(Testing::makeFailableTimesTwoLambda(normal_lmbd_has_been_called))
+                                 .and_then(Testing::makeFailLambda<double>(error_lmbd_has_been_called, error))
+                                 .and_then(Testing::makeFailableTimesTwoLambda(normal_lmbd_has_been_called))
                                  .get();
             REQUIRE(normal_lmbd_has_been_called == 1);
             REQUIRE(error_lmbd_has_been_called == 1);
@@ -223,7 +196,7 @@ TEST_CASE("Test expected_task", "[task]")
             const double init_value = 1.2;
             std::size_t has_been_called = 0;
             const auto res = expected_task::expected_task<double, std::wstring>{init_value}
-                                 .and_then(makeFailableTimesTwoLambda(has_been_called))
+                                 .and_then(Testing::makeFailableTimesTwoLambda(has_been_called))
                                  .then_map(static_cast<std::wstring (*)(double)>(&std::to_wstring))
                                  .get();
             REQUIRE(has_been_called == 1);
@@ -239,8 +212,8 @@ TEST_CASE("Test expected_task", "[task]")
             std::size_t error_lmbd_has_been_called = 0;
             const std::wstring error = L"error!";
             const auto res = expected_task::expected_task<double, std::wstring>{init_value}
-                                 .and_then(makeFailableTimesTwoLambda(normal_lmbd_has_been_called))
-                                 .and_then(makeFailLambda<double>(error_lmbd_has_been_called, error))
+                                 .and_then(Testing::makeFailableTimesTwoLambda(normal_lmbd_has_been_called))
+                                 .and_then(Testing::makeFailLambda<double>(error_lmbd_has_been_called, error))
                                  .then_map(static_cast<std::wstring (*)(double)>(&std::to_wstring))
                                  .get();
             REQUIRE(normal_lmbd_has_been_called == 1);
@@ -254,7 +227,7 @@ TEST_CASE("Test expected_task", "[task]")
             const double init_value = 2;
             std::size_t has_been_called = 0;
             const auto res = expected_task::expected_task<int, std::wstring>{init_value}
-                                 .and_then(makeFailableTimesTwoLambda(has_been_called))
+                                 .and_then(Testing::makeFailableTimesTwoLambda(has_been_called))
                                  .get();
             REQUIRE(has_been_called == 1);
             REQUIRE(res.has_value());
@@ -270,7 +243,7 @@ TEST_CASE("Test expected_task", "[task]")
         std::size_t final_lmbd_has_been_called = 0;
         const std::wstring error = L"error!";
         expected_task::expected_task<double, std::wstring>{init_value}
-            .and_then(makeFailLambda<double>(error_lmbd_has_been_called, error))
+            .and_then(Testing::makeFailLambda<double>(error_lmbd_has_been_called, error))
             .or_else(
                 [&final_lmbd_has_been_called, &error](auto err)
                 {
@@ -293,7 +266,7 @@ TEST_CASE("Test expected_task", "[task]")
             const std::wstring error = L"error!";
             const std::wstring prefix = L"new ";
             const auto res = expected_task::expected_task<double, std::wstring>{init_value}
-                                 .and_then(makeFailLambda<double>(error_lmbd_has_been_called, error))
+                                 .and_then(Testing::makeFailLambda<double>(error_lmbd_has_been_called, error))
                                  .map_error(
                                      [&map_lmbd_has_been_called, &prefix](const std::wstring err) -> std::wstring
                                      {
@@ -314,7 +287,7 @@ TEST_CASE("Test expected_task", "[task]")
             std::size_t error_lmbd_has_been_called = 0;
             const std::wstring error = L"error!";
             const auto res = expected_task::expected_task<double, std::wstring>{init_value}
-                                 .and_then(makeFailLambda<double>(error_lmbd_has_been_called, error))
+                                 .and_then(Testing::makeFailLambda<double>(error_lmbd_has_been_called, error))
                                  .map_error(&convertStr)
                                  .get();
             CHECK(std::is_same_v<std::string, typename decltype(res)::error_type>);
@@ -336,7 +309,7 @@ TEST_CASE("Test expected_task", "[task]")
             const std::wstring prefix = L"new ";
             const auto res
                 = expected_task::expected_task<double, std::wstring>{init_value}
-                      .and_then(makeFailLambda<double>(error_lmbd_has_been_called, error))
+                      .and_then(Testing::makeFailLambda<double>(error_lmbd_has_been_called, error))
                       .map_error(
                           [&map_lmbd_has_been_called, &prefix](const std::wstring err) -> pplx::task<std::wstring>
                           {
@@ -358,7 +331,7 @@ TEST_CASE("Test expected_task", "[task]")
             std::size_t error_lmbd_has_been_called = 0;
             const std::wstring error = L"error!";
             const auto res = expected_task::expected_task<double, std::wstring>{init_value}
-                                 .and_then(makeFailLambda<double>(error_lmbd_has_been_called, error))
+                                 .and_then(Testing::makeFailLambda<double>(error_lmbd_has_been_called, error))
                                  .map_error(&convertStrTask)
                                  .get();
             static_assert(std::is_same_v<std::string, typename decltype(res)::error_type>, "the error type is wrong");
