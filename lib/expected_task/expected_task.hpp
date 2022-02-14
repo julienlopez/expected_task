@@ -73,11 +73,17 @@ public:
     {
     }
 
+    template <class Val, class Err>
+    requires std::is_convertible_v<Val, ValueType> && std::is_convertible_v<Err, ErrorType>
+    expected_task(expected_task<Val, Err> et)
+        : m_task(std::move(et))
+    {
+    }
+
     template <class Val>
     expected_task(pplx::task<Val> task) requires std::is_convertible_v<Val, ValueType>
         : m_task{task.then([](Val val) { return expected_type{val}; })}
     {
-        static_assert(std::is_convertible_v<Val, value_type>);
     }
 
     expected_task(pplx::task<void> task)
@@ -86,25 +92,22 @@ public:
     }
 
     template <class NewT, class NewE>
+    requires std::is_convertible_v<NewT, ValueType> && std::is_convertible_v<NewE, ErrorType>
     expected_task(tl::expected<NewT, NewE> value)
         : m_task{pplx::task_from_result(std::move(value))}
     {
-        static_assert(std::is_convertible_v<NewT, value_type>);
-        static_assert(std::is_convertible_v<NewE, error_type>);
     }
 
     template <class NewE>
-    expected_task(tl::unexpected<NewE> error)
+    requires std::is_convertible_v<NewE, ErrorType> expected_task(tl::unexpected<NewE> error)
         : m_task{pplx::task_from_result(expected_type{std::move(error)})}
     {
-        static_assert(std::is_convertible_v<NewE, error_type>);
     }
 
     template <class NewT>
-    expected_task(NewT&& value)
+    requires std::is_convertible_v<NewT, ValueType> expected_task(NewT&& value)
         : m_task{pplx::task_from_result(expected_type{std::forward<NewT>(value)})}
     {
-        static_assert(std::is_convertible_v<NewT, value_type>);
     }
 
     template <class FCT>
