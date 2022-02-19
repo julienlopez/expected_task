@@ -23,6 +23,12 @@ jobs:
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
           }
         - {
+            name: "Windows Latest MSVC 2019", artifact: "Windows-MSVC.tar.xz",
+            os: windows-latest,
+            build_type: "Debug", cc: "cl", cxx: "cl",
+            environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
+          }
+        - {
             name: "Ubuntu 20.04 Latest GCC", artifact: "Linux.7z",
             os: ubuntu-20.04,
             cc: "gcc-10", cxx: "g++-10"
