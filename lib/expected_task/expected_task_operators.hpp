@@ -1,8 +1,8 @@
 #pragma once
 
-#include <expected_task/expected_task.hpp>
-
 #include <concepts>
+
+#include <expected_task/expected_task.hpp>
 
 template <class Value, class Error, class Callback>
 requires std::invocable<Callback, Value>

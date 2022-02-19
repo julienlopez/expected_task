@@ -1,5 +1,7 @@
 #pragma once
 
+#include <concepts>
+
 #include <tl/expected.hpp>
 
 template <class Value, class Error, class Callback>
