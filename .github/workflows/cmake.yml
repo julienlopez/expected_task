@@ -40,7 +40,7 @@ jobs:
         - {
             name: "macOS 11 GCC 11", artifact: "macOS.7z",
             os: macos-11,
-            cc: "gcc-11", cxx: "g++11"
+            cc: "gcc-11", cxx: "g++-11"
           }
 
     steps:
