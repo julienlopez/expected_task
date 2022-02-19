@@ -23,11 +23,6 @@ jobs:
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
           }
         - {
-            name: "Ubuntu 20.04 GCC 9", artifact: "Linux.7z",
-            os: ubuntu-20.04,
-            cc: "gcc-9", cxx: "g++-9"
-          }
-        - {
             name: "Ubuntu 20.04 GCC 10", artifact: "Linux.7z",
             os: ubuntu-20.04,
             cc: "gcc-10", cxx: "g++-10"
@@ -41,11 +36,6 @@ jobs:
             name: "Ubuntu 20.04 clang 11", artifact: "Linux.7z",
             os: ubuntu-20.04,
             cc: "clang-11", cxx: "clang++-11"
-          }
-        - {
-            name: "Ubuntu 20.04 clang 10", artifact: "Linux.7z",
-            os: ubuntu-20.04,
-            cc: "clang-10", cxx: "clang++-10"
           }
         # - {
         #     name: "macOS 11 Latest Clang", artifact: "macOS.7z",
