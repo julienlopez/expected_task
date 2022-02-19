@@ -19,13 +19,13 @@ jobs:
         - {
             name: "Windows Latest MSVC", artifact: "Windows-MSVC.7z",
             os: windows-latest,
-            cc: "cl", cxx: "cl",
+            cc: "cl.exe", cxx: "cl.exe",
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
           }
         - {
             name: "Windows Latest MSVC 2019", artifact: "Windows-MSVC.tar.xz",
             os: windows-latest,
-            build_type: "Debug", cc: "cl", cxx: "cl",
+            build_type: "Debug", cc: "cl.exe", cxx: "cl.exe",
             environment_script: "C:/Program Files (x86)/Microsoft Visual Studio/2019/Enterprise/VC/Auxiliary/Build/vcvars64.bat"
           }
         - {
